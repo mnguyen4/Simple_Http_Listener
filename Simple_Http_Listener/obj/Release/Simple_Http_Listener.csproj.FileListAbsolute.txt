@@ -1,9 +1,0 @@
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Release\Images\mnbp.jpg
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Release\install.bat
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Release\uninstall.bat
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Release\Simple_Http_Listener.exe.config
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Release\Simple_Http_Listener.exe
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Release\Simple_Http_Listener.pdb
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\obj\Release\Simple_Http_Listener.csprojResolveAssemblyReference.cache
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\obj\Release\Simple_Http_Listener.exe
-D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\obj\Release\Simple_Http_Listener.pdb
