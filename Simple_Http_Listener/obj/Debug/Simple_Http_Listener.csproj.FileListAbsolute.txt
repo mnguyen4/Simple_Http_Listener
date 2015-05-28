@@ -1,0 +1,2 @@
+D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\bin\Debug\Simple_Http_Listener.exe.config
+D:\Workspace\Simple_Http_Listener\Simple_Http_Listener\obj\Debug\Simple_Http_Listener.csprojResolveAssemblyReference.cache
