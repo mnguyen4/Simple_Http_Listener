@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.ServiceProcess;
@@ -41,7 +43,8 @@ namespace Simple_Http_Listener
         {
             var context = listener.EndGetContext(result);
             var response = context.Response;
-            var buffer = Encoding.UTF8.GetBytes("<div></div>");
+            var buffer = getImageBytes();
+            response.ContentType = "image/jpeg";
             response.ContentLength64 = buffer.Length;
             var output = response.OutputStream;
             output.Write(buffer, 0, buffer.Length);
@@ -53,7 +56,11 @@ namespace Simple_Http_Listener
         private byte[] getImageBytes()
         {
             byte[] imageBytes = null;
-            Image image = Image.FromFile("Images\\mnbp.jpg");
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images\\mnbp.jpg");
+            Image image = Image.FromFile(filePath);
+            MemoryStream ms = new MemoryStream();
+            image.Save(ms, ImageFormat.Jpeg);
+            imageBytes = ms.ToArray();
             return imageBytes;
         }
     }
