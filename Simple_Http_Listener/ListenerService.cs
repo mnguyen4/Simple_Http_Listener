@@ -42,13 +42,16 @@ namespace Simple_Http_Listener
         private void OnRequestReceived(IAsyncResult result)
         {
             var context = listener.EndGetContext(result);
+            var request = context.Request;
             var response = context.Response;
-            var buffer = getImageBytes();
-            response.ContentType = "image/jpeg";
-            response.ContentLength64 = buffer.Length;
-            var output = response.OutputStream;
-            output.Write(buffer, 0, buffer.Length);
-            output.Close();
+            if (request.Url.ToString().Contains(".js"))
+            {
+                sendJavaScriptResponse(response);
+            }
+            else
+            {
+                sendImageResponse(response);
+            }
             // Wait for next request
             listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
         }
@@ -62,6 +65,45 @@ namespace Simple_Http_Listener
             image.Save(ms, ImageFormat.Jpeg);
             imageBytes = ms.ToArray();
             return imageBytes;
+        }
+
+        private byte[] getFileBytes(string file)
+        {
+            byte[] fileByte = null;
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
+            string jsText = "";
+            try
+            {
+                jsText = File.ReadAllText(filePath);
+            }
+            catch (IOException e)
+            {
+                jsText = e.Message;
+            }
+            fileByte = Encoding.UTF8.GetBytes(jsText);
+            return fileByte;
+        }
+
+        private void sendImageResponse(HttpListenerResponse response)
+        {
+            byte[] buffer = getImageBytes();
+            response.ContentType = "image/jpeg";
+            response.ContentLength64 = buffer.Length;
+            using (var output = response.OutputStream)
+            {
+                output.Write(buffer, 0, buffer.Length);
+            }
+        }
+
+        private void sendJavaScriptResponse(HttpListenerResponse response)
+        {
+            byte[] buffer = getFileBytes("Content\\mnbp.js");
+            response.ContentType = "text/javascript";
+            response.ContentLength64 = buffer.Length;
+            using (var output = response.OutputStream)
+            {
+                output.Write(buffer, 0, buffer.Length);
+            }
         }
     }
 }
