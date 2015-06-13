@@ -44,9 +44,13 @@ namespace Simple_Http_Listener
             var context = listener.EndGetContext(result);
             var request = context.Request;
             var response = context.Response;
-            if (request.Url.ToString().Contains(".js"))
+            if (request.Url.ToString().Contains(".js") || request.AcceptTypes.Contains("text/javascript"))
             {
                 sendJavaScriptResponse(response);
+            }
+            else if (request.Url.ToString().Contains(".html") || request.AcceptTypes.Contains("text/html"))
+            {
+                sendHTMLResponse(response);
             }
             else
             {
@@ -99,6 +103,17 @@ namespace Simple_Http_Listener
         {
             byte[] buffer = getFileBytes("Content\\mnbp.js");
             response.ContentType = "text/javascript";
+            response.ContentLength64 = buffer.Length;
+            using (var output = response.OutputStream)
+            {
+                output.Write(buffer, 0, buffer.Length);
+            }
+        }
+
+        private void sendHTMLResponse(HttpListenerResponse response)
+        {
+            byte[] buffer = getFileBytes("Content\\mnbp.html");
+            response.ContentType = "text/html";
             response.ContentLength64 = buffer.Length;
             using (var output = response.OutputStream)
             {
