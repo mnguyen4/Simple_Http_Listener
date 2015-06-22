@@ -44,20 +44,30 @@ namespace Simple_Http_Listener
             var context = listener.EndGetContext(result);
             var request = context.Request;
             var response = context.Response;
-            if (request.Url.ToString().Contains(".js") || request.AcceptTypes.Contains("text/javascript"))
+            try
             {
-                sendJavaScriptResponse(response);
+                if (request.Url.ToString().Contains(".js") || request.AcceptTypes.Contains("text/javascript"))
+                {
+                    sendJavaScriptResponse(response);
+                }
+                else if (request.Url.ToString().Contains(".html") || request.AcceptTypes.Contains("text/html"))
+                {
+                    sendHTMLResponse(response);
+                }
+                else
+                {
+                    sendImageResponse(response);
+                }
             }
-            else if (request.Url.ToString().Contains(".html") || request.AcceptTypes.Contains("text/html"))
+            catch (Exception e)
             {
-                sendHTMLResponse(response);
+                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"), e.StackTrace);
             }
-            else
+            finally
             {
-                sendImageResponse(response);
+                // Wait for next request
+                listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
             }
-            // Wait for next request
-            listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
         }
 
         private byte[] getImageBytes()
