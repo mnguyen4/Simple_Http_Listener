@@ -17,18 +17,29 @@ namespace Simple_Http_Listener
     public partial class ListenerService : ServiceBase
     {
         private static HttpListener listener;
+        private static HostsFileManager hostsFileManager;
+        private static bool useHostsFile;
 
-        public ListenerService()
+        public ListenerService(string[] hostNames, bool useHosts)
         {
+            useHostsFile = useHosts;
+            hostsFileManager = new HostsFileManager();
             InitializeComponent();
             // Initialize the Http listener
             listener = new HttpListener();
-            listener.Prefixes.Add("http://127.0.0.1:80/");
+            foreach (string name in hostNames) {
+                listener.Prefixes.Add("http://"+name+":80/"); 
+            }
             listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
         }
 
         protected override void OnStart(string[] args)
         {
+            if (useHostsFile)
+            {
+                hostsFileManager.applyHostsFile();
+            }
+            LogUtils.writeLog("Starting service...");
             listener.Start();
             // Do async callback to process request
             listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
@@ -36,7 +47,12 @@ namespace Simple_Http_Listener
 
         protected override void OnStop()
         {
+            LogUtils.writeLog("Stopping service...");
             listener.Stop();
+            if (useHostsFile)
+            {
+                hostsFileManager.restoreHostsFile();
+            }
         }
 
         private void OnRequestReceived(IAsyncResult result)
@@ -61,7 +77,7 @@ namespace Simple_Http_Listener
             }
             catch (Exception e)
             {
-                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt"), e.StackTrace);
+                LogUtils.writeLog(e.StackTrace);
             }
             finally
             {

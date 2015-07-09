@@ -1,0 +1,2 @@
+﻿You can put your hosts file here and enable "useHostFile" in the .config file to replace the system hosts file with yours.
+This might be useful for setting a local host name for this service.
