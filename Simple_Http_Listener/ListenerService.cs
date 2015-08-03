@@ -28,7 +28,8 @@ namespace Simple_Http_Listener
             // Initialize the Http listener
             listener = new HttpListener();
             foreach (string name in hostNames) {
-                listener.Prefixes.Add("http://"+name+":80/"); 
+                listener.Prefixes.Add("http://" + name + ":80/");
+                listener.Prefixes.Add("https://" + name + ":443/");
             }
             listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
         }
