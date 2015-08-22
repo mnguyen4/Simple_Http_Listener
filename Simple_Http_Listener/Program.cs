@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceProcess;
 
 namespace Simple_Http_Listener
 {
@@ -20,10 +15,12 @@ namespace Simple_Http_Listener
             string[] hostNames = hostName.Split(';');
             bool useHostsFile = ConfigReader.getBoolConfig("useHostsFile");
             LogUtils.writeLog("Use Hosts File: " + useHostsFile);
+            bool useHttps = ConfigReader.getBoolConfig("useHttps");
+            LogUtils.writeLog("Use HTTPS: " + useHttps);
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[] 
             { 
-                new ListenerService(hostNames, useHostsFile)
+                new ListenerService(hostNames, useHostsFile, useHttps)
             };
             ServiceBase.Run(ServicesToRun);
         }

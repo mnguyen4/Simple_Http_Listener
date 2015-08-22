@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -10,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.ServiceProcess;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Simple_Http_Listener
 {
@@ -20,8 +15,9 @@ namespace Simple_Http_Listener
         private static HostsFileManager hostsFileManager;
         private static bool useHostsFile;
 
-        public ListenerService(string[] hostNames, bool useHosts)
+        public ListenerService(string[] hostNames, bool useHosts, bool useHttps)
         {
+            this.CanShutdown = true;
             useHostsFile = useHosts;
             hostsFileManager = new HostsFileManager();
             InitializeComponent();
@@ -29,7 +25,10 @@ namespace Simple_Http_Listener
             listener = new HttpListener();
             foreach (string name in hostNames) {
                 listener.Prefixes.Add("http://" + name + ":80/");
-                listener.Prefixes.Add("https://" + name + ":443/");
+                if (useHttps)
+                {
+                    listener.Prefixes.Add("https://" + name + ":443/");
+                }
             }
             listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
         }
@@ -44,16 +43,23 @@ namespace Simple_Http_Listener
             listener.Start();
             // Do async callback to process request
             listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
+            LogUtils.writeLog("Service started.");
         }
 
         protected override void OnStop()
         {
             LogUtils.writeLog("Stopping service...");
-            listener.Stop();
+            listener.Close();
             if (useHostsFile)
             {
                 hostsFileManager.restoreHostsFile();
             }
+            LogUtils.writeLog("Service stopped.");
+        }
+
+        protected override void OnShutdown()
+        {
+            this.OnStop();
         }
 
         private void OnRequestReceived(IAsyncResult result)
