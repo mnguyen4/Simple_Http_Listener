@@ -22,7 +22,11 @@ namespace Simple_Http_Listener
 
         public void applyHostsFile()
         {
-            if (copyHostsFile(HOSTS_FILE_PATH, hostsBackup) && copyHostsFile(hostsFile, HOSTS_FILE_PATH))
+            if (!File.Exists(hostsBackup))
+            {
+                copyHostsFile(HOSTS_FILE_PATH, hostsBackup);
+            }
+            if (copyHostsFile(hostsFile, HOSTS_FILE_PATH))
             {
                 flushDnsCache();
             }
