@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Simple_Http_Listener
 {
@@ -26,20 +22,18 @@ namespace Simple_Http_Listener
 
         public void applyHostsFile()
         {
-            if (!copyHostsFile(HOSTS_FILE_PATH, hostsBackup) || !copyHostsFile(hostsFile, HOSTS_FILE_PATH))
+            if (copyHostsFile(HOSTS_FILE_PATH, hostsBackup) && copyHostsFile(hostsFile, HOSTS_FILE_PATH))
             {
-                return;
+                flushDnsCache();
             }
-            flushDnsCache();
         }
 
         public void restoreHostsFile()
         {
-            if (!copyHostsFile(hostsBackup, HOSTS_FILE_PATH))
+            if (copyHostsFile(hostsBackup, HOSTS_FILE_PATH))
             {
-                return;
+                flushDnsCache();
             }
-            flushDnsCache();
         }
 
         private bool copyHostsFile(string source, string destination)
