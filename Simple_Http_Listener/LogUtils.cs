@@ -10,7 +10,8 @@ namespace Simple_Http_Listener
         public static void writeLog(string stringToLog)
         {
             // append string to log file
-            File.AppendAllText(LOG_LOCATION, stringToLog + "\n");
+            stringToLog = DateTime.Now + " - " + stringToLog + "\n";
+            File.AppendAllText(LOG_LOCATION, stringToLog);
         }
     }
 }

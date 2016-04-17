@@ -108,16 +108,17 @@ namespace Simple_Http_Listener
         {
             byte[] fileByte = null;
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
-            string jsText = "";
+            string fileText = "";
             try
             {
-                jsText = File.ReadAllText(filePath);
+                fileText = File.ReadAllText(filePath);
             }
             catch (IOException e)
             {
-                jsText = e.Message;
+                fileText = e.Message;
             }
-            fileByte = Encoding.UTF8.GetBytes(jsText);
+            fileText = fileText.Replace("%img.location%", listener.Prefixes.First());
+            fileByte = Encoding.UTF8.GetBytes(fileText);
             return fileByte;
         }
 
