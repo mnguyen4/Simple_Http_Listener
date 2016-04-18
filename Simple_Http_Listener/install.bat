@@ -1,3 +1,3 @@
-sc create SimpleListener binPath= %~dp0\Simple_Http_Listener.exe start= auto displayName= "Simple Listener"
+sc create SimpleListener binPath= %~dp0\Simple_Http_Listener.exe start= delayed-auto displayName= "Simple Listener"
 sc start SimpleListener
 timeout /t 5
