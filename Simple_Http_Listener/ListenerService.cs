@@ -69,12 +69,11 @@ namespace Simple_Http_Listener
             var response = context.Response;
             try
             {
-                bool hasAcceptTypes = request.AcceptTypes != null && request.AcceptTypes.Length > 0;
-                if (request.Url.ToString().Contains(".js") || (hasAcceptTypes && request.AcceptTypes.Contains("text/javascript")))
+                if (request.Url.ToString().Contains(".js") || request.AcceptTypes.Contains("text/javascript"))
                 {
                     sendJavaScriptResponse(response);
                 }
-                else if (request.Url.ToString().Contains(".html") || (hasAcceptTypes && request.AcceptTypes.Contains("text/html")))
+                else if (request.Url.ToString().Contains(".html") || request.AcceptTypes.Contains("text/html"))
                 {
                     sendHTMLResponse(response);
                 }
@@ -85,7 +84,7 @@ namespace Simple_Http_Listener
             }
             catch (Exception e)
             {
-                LogUtils.writeLog(e.ToString());
+                LogUtils.writeLog(e.StackTrace);
             }
             finally
             {
@@ -117,7 +116,6 @@ namespace Simple_Http_Listener
             catch (IOException e)
             {
                 fileText = e.Message;
-                LogUtils.writeLog(e.ToString());
             }
             fileText = fileText.Replace("%img.location%", listener.Prefixes.First());
             fileByte = Encoding.UTF8.GetBytes(fileText);
