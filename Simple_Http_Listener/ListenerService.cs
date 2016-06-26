@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 
 namespace Simple_Http_Listener
 {
@@ -43,7 +44,7 @@ namespace Simple_Http_Listener
             listener.Start();
             // Do async callback to process request
             listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
-            LogUtils.writeLog("Service started.");
+            LogUtils.writeLog("Service started. GUID is " + System.Reflection.Assembly.GetExecutingAssembly().GetType().GUID);
         }
 
         protected override void OnStop()
@@ -67,31 +68,32 @@ namespace Simple_Http_Listener
             var context = listener.EndGetContext(result);
             var request = context.Request;
             var response = context.Response;
-            try
+            Thread responseThread = new Thread(() =>
             {
-                bool hasAcceptTypes = request.AcceptTypes != null && request.AcceptTypes.Length > 0;
-                if (request.Url.ToString().Contains(".js") || (hasAcceptTypes && request.AcceptTypes.Contains("text/javascript")))
+                try
                 {
-                    sendJavaScriptResponse(response);
+                    bool hasAcceptTypes = request.AcceptTypes != null && request.AcceptTypes.Length > 0;
+                    if (request.Url.ToString().Contains(".js") || (hasAcceptTypes && request.AcceptTypes.Contains("text/javascript")))
+                    {
+                        sendJavaScriptResponse(response);
+                    }
+                    else if (request.Url.ToString().Contains(".html") || (hasAcceptTypes && request.AcceptTypes.Contains("text/html")))
+                    {
+                        sendHTMLResponse(response);
+                    }
+                    else
+                    {
+                        sendImageResponse(response);
+                    }
                 }
-                else if (request.Url.ToString().Contains(".html") || (hasAcceptTypes && request.AcceptTypes.Contains("text/html")))
+                catch (Exception e)
                 {
-                    sendHTMLResponse(response);
+                    LogUtils.writeLog(e.ToString());
                 }
-                else
-                {
-                    sendImageResponse(response);
-                }
-            }
-            catch (Exception e)
-            {
-                LogUtils.writeLog(e.ToString());
-            }
-            finally
-            {
-                // Wait for next request
-                listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
-            }
+            });
+            responseThread.Start();
+            // Wait for next request
+            listener.BeginGetContext(new AsyncCallback(OnRequestReceived), listener);
         }
 
         private byte[] getImageBytes()
